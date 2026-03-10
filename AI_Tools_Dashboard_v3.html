@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Design Tools — Senior Stack 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080809;
+  --surface: #0f0f11;
+  --surface2: #161619;
+  --border: #232328;
+  --border2: #2e2e35;
+  --text: #ececec;
+  --muted: #555560;
+  --muted2: #3a3a44;
+  --white: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ─── HEADER ─── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8,8,9,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  color: var(--white);
+}
+
+.header-logo span { color: #e8ff47; }
+
+.header-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.header-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  background: transparent;
+}
+
+.nav-dot:hover { border-color: var(--border2); background: var(--surface2); }
+
+/* ─── HERO ─── */
+.hero {
+  padding: 80px 48px 60px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: 'AI';
+  position: absolute;
+  right: -20px;
+  top: -40px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28vw;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.025);
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+
+.hero-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-label::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: var(--muted);
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 10vw, 9rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  margin-bottom: 32px;
+}
+
+.hero-title .accent { color: #e8ff47; }
+.hero-title .dim { color: var(--muted2); }
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--white);
+}
+
+.stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ─── FILTERS ─── */
+.filters-bar {
+  padding: 16px 48px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: var(--surface);
+  position: sticky;
+  top: 56px;
+  z-index: 90;
+}
+
+.filter-btn {
+  padding: 5px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.filter-btn:hover { border-color: var(--border2); color: var(--text); }
+.filter-btn.active { background: #e8ff47; color: #080809; border-color: #e8ff47; font-weight: 600; }
+
+.filter-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* ─── MAIN CONTENT ─── */
+main {
+  padding: 0 48px 100px;
+}
+
+/* ─── CATEGORY BLOCK ─── */
+.category-block {
+  padding: 56px 0 0;
+  border-top: 1px solid var(--border);
+  margin-top: 56px;
+  animation: fadeUp 0.5s ease both;
+}
+
+.category-block:first-child { margin-top: 0; border-top: none; }
+
+.cat-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.cat-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+.cat-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.6rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.cat-count {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+
+.cat-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  max-width: 600px;
+}
+
+/* ─── SUB-CATEGORY ─── */
+.sub-category {
+  margin-bottom: 36px;
+}
+
+.sub-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sub-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ─── TOOL GRID ─── */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+
+/* ─── TOOL CARD ─── */
+.tool-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--cat-color, #e8ff47);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tool-card:hover {
+  background: var(--surface2);
+  border-color: var(--border2);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+
+.tool-card:hover::before { opacity: 1; }
+
+.tool-card-top {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.tool-logo-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.tool-logo-wrap img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.tool-logo-fallback {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  color: var(--cat-color, #e8ff47);
+  letter-spacing: 0.05em;
+}
+
+.tool-info { flex: 1; min-width: 0; }
+
+.tool-name {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tool-domain {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.tool-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 100px;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+.badge-best    { background: rgba(232,255,71,0.1);  color: #e8ff47; border: 1px solid rgba(232,255,71,0.2); }
+.badge-free    { background: rgba(100,220,150,0.1); color: #64dc96; border: 1px solid rgba(100,220,150,0.2); }
+.badge-paid    { background: rgba(255,107,53,0.1);  color: #ff6b35; border: 1px solid rgba(255,107,53,0.2); }
+.badge-included{ background: rgba(96,165,250,0.1);  color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+.badge-alt     { background: rgba(180,180,180,0.08);color: #888898; border: 1px solid rgba(180,180,180,0.12);}
+
+.tool-desc {
+  font-size: 12px;
+  color: #8080a0;
+  line-height: 1.6;
+}
+
+.tool-note {
+  font-size: 11px;
+  color: var(--muted);
+  background: rgba(255,255,255,0.02);
+  border-left: 2px solid var(--border2);
+  padding: 7px 10px;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.5;
+}
+
+.tool-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.price-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.price-free { color: #64dc96; }
+.price-paid { color: #ff6b35; }
+.price-included { color: #60a5fa; }
+
+.visit-arrow {
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.tool-card:hover .visit-arrow {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+/* ─── COST SUMMARY ─── */
+.cost-section {
+  margin-top: 72px;
+  padding-top: 56px;
+  border-top: 1px solid var(--border);
+}
+
+.cost-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.6rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.cost-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.cost-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.cost-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cost-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cost-cat-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cost-min {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #ff6b35;
+}
+
+.cost-free-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: #64dc96;
+  line-height: 1.5;
+}
+
+.zero-spend-banner {
+  background: linear-gradient(135deg, rgba(232,255,71,0.06), rgba(232,255,71,0.02));
+  border: 1px solid rgba(232,255,71,0.15);
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.banner-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.banner-text {
+  font-size: 12.5px;
+  color: #c8d870;
+  line-height: 1.65;
+}
+
+.banner-text strong {
+  color: #e8ff47;
+  font-weight: 600;
+}
+
+/* ─── LEGEND ─── */
+.legend-section {
+  margin-top: 56px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+
+.legend-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.legend-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 20px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.site-header { animation: fadeIn 0.4s ease; }
+.hero { animation: fadeUp 0.5s ease 0.1s both; }
+.filters-bar { animation: fadeUp 0.4s ease 0.2s both; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .site-header, .filters-bar, main, footer { padding-left: 20px; padding-right: 20px; }
+  .hero { padding: 48px 20px 40px; }
+  .hero-title { font-size: 4rem; }
+  .tools-grid { grid-template-columns: 1fr; }
+  .cost-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-logo">AI <span>DESIGN</span> STACK</div>
+  <div class="header-meta">MARCH 2026 · 40+ TOOLS · 7 CATEGORIES</div>
+  <nav class="header-nav">
+    <a class="nav-dot" href="#ppt" title="PPT">📊</a>
+    <a class="nav-dot" href="#linkedin" title="LinkedIn">📱</a>
+    <a class="nav-dot" href="#profile" title="Profile">🧑‍💼</a>
+    <a class="nav-dot" href="#web" title="Web">🌐</a>
+    <a class="nav-dot" href="#responsive" title="Responsive">📐</a>
+    <a class="nav-dot" href="#diagrams" title="Diagrams">📈</a>
+    <a class="nav-dot" href="#video" title="Video">🎬</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-label">Senior Designer Daily Reference</div>
+  <h1 class="hero-title">
+    <span class="dim">YOUR</span><br>
+    AI <span class="accent">TOOL</span><br>
+    <span class="dim">STACK</span>
+  </h1>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Total Tools</div></div>
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">Categories</div></div>
+    <div class="stat"><div class="stat-num" style="color:#64dc96">$0</div><div class="stat-label">Min New Spend</div></div>
+    <div class="stat"><div class="stat-num">2026</div><div class="stat-label">Updated</div></div>
+  </div>
+</section>
+
+<!-- FILTERS -->
+<div class="filters-bar">
+  <button class="filter-btn active" onclick="filterAll(this)">All Tools</button>
+  <div class="filter-sep"></div>
+  <button class="filter-btn" onclick="filterPrice('free', this)">🆓 Free Only</button>
+  <button class="filter-btn" onclick="filterPrice('included', this)">✅ In My Plan</button>
+  <button class="filter-btn" onclick="filterPrice('paid', this)">💳 Paid</button>
+  <div class="filter-sep"></div>
+  <button class="filter-btn" onclick="filterBadge('best', this)">⭐ Best Picks Only</button>
+</div>
+
+<!-- MAIN -->
+<main>
+
+<!-- ─── PPT ─── -->
+<section class="category-block" id="ppt" style="--cat-color:#a3e635">
+  <div class="cat-header">
+    <span class="cat-number">01</span>
+    <h2 class="cat-title" style="color:#a3e635">PPT Architecture</h2>
+    <span class="cat-count">5 tools</span>
+  </div>
+  <p class="cat-desc">AI-powered presentation builders that structure narratives and apply design systems automatically.</p>
+  <div class="tools-grid">
+
+    <a class="tool-card" href="https://gamma.app" target="_blank" data-price="free" data-badge="best">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/gamma.app" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">GA</span></div>
+        <div class="tool-info"><div class="tool-name">Gamma</div><div class="tool-domain">gamma.app</div></div>
+        <div class="tool-badges"><span class="badge badge-best">⭐ Best Pick</span><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Generates full presentations from a prompt — structures narrative, picks layouts, and applies consistent design language throughout.</p>
+      <div class="tool-note">💡 Free plan ~10 decks/month. Import existing content and let it redesign it entirely.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $8/mo Plus</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://slides.google.com" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/google.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">GS</span></div>
+        <div class="tool-info"><div class="tool-name">Google Slides + Gemini</div><div class="tool-domain">slides.google.com</div></div>
+        <div class="tool-badges"><span class="badge badge-free">🆓 Free</span></div>
+      </div>
+      <p class="tool-desc">Native AI inside Google Slides — generates layouts, rewrites content, and suggests designs without leaving the app.</p>
+      <div class="tool-note">💡 Completely free with any Google account. Best zero-cost PPT option for client collaboration.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free forever</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.alai.so" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/alai.so" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">AL</span></div>
+        <div class="tool-info"><div class="tool-name">Alai</div><div class="tool-domain">alai.so</div></div>
+        <div class="tool-badges"><span class="badge badge-alt">🎨 Best Design</span><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Context-aware AI that keeps full deck consistency — edits stay on-theme across all slides simultaneously.</p>
+      <div class="tool-note">💡 Free tier available. Best design quality output for high-end client decks.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → paid plans</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.beautiful.ai" target="_blank" data-price="paid" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/beautiful.ai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">BA</span></div>
+        <div class="tool-info"><div class="tool-name">Beautiful.ai</div><div class="tool-domain">beautiful.ai</div></div>
+        <div class="tool-badges"><span class="badge badge-paid">💳 Paid</span></div>
+      </div>
+      <p class="tool-desc">Smart slide templates that auto-layout as you add content. Strong brand lock-in for consistent team decks.</p>
+      <div class="tool-note">💡 Best for teams that need consistent branded decks across multiple designers.</div>
+      <div class="tool-price-row"><span class="price-pill price-paid">$12/mo Pro</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://tome.app" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/tome.app" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">TM</span></div>
+        <div class="tool-info"><div class="tool-name">Tome</div><div class="tool-domain">tome.app</div></div>
+        <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">AI-native presentation with storytelling focus — great for narrative-heavy pitch decks and proposals.</p>
+      <div class="tool-note">💡 Better than Gamma for long-form storytelling and investor presentations.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $16/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ─── LINKEDIN ─── -->
+<section class="category-block" id="linkedin" style="--cat-color:#60a5fa">
+  <div class="cat-header">
+    <span class="cat-number">02</span>
+    <h2 class="cat-title" style="color:#60a5fa">LinkedIn Posts</h2>
+    <span class="cat-count">5 tools</span>
+  </div>
+  <p class="cat-desc">Images, carousels, and content generation optimized for LinkedIn engagement.</p>
+  <div class="tools-grid">
+
+    <a class="tool-card" href="https://www.canva.com" target="_blank" data-price="free" data-badge="best">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/canva.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">CA</span></div>
+        <div class="tool-info"><div class="tool-name">Canva</div><div class="tool-domain">canva.com</div></div>
+        <div class="tool-badges"><span class="badge badge-best">⭐ Best Free</span><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Huge template library for carousels, posts, and stories with AI Magic Studio. Used by millions of designers daily.</p>
+      <div class="tool-note">💡 Free plan covers most LinkedIn needs. Already widely used — zero friction.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $15/mo Pro</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.aicarousels.com" target="_blank" data-price="free" data-badge="best">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/aicarousels.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">AC</span></div>
+        <div class="tool-info"><div class="tool-name">aiCarousels</div><div class="tool-domain">aicarousels.com</div></div>
+        <div class="tool-badges"><span class="badge badge-best">⭐ Best Pick</span><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Turns ideas or URLs into finished LinkedIn carousels in seconds. No signup required on free tier.</p>
+      <div class="tool-note">💡 Best dedicated carousel tool. Pro unlocks full AI generation and brand kit.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → Pro plans</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://firefly.adobe.com" target="_blank" data-price="included" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/adobe.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">Ff</span></div>
+        <div class="tool-info"><div class="tool-name">Adobe Firefly</div><div class="tool-domain">firefly.adobe.com</div></div>
+        <div class="tool-badges"><span class="badge badge-included">✅ In Plan</span></div>
+      </div>
+      <p class="tool-desc">Generate on-brand images for posts from prompts. Integrates natively with Photoshop for full control.</p>
+      <div class="tool-note">💡 Already in your Adobe plan — best image quality for branded LinkedIn visuals at no extra cost.</div>
+      <div class="tool-price-row"><span class="price-pill price-included">Included in Adobe</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.supergrow.ai" target="_blank" data-price="paid" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/supergrow.ai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">SG</span></div>
+        <div class="tool-info"><div class="tool-name">Supergrow</div><div class="tool-domain">supergrow.ai</div></div>
+        <div class="tool-badges"><span class="badge badge-paid">💳 Paid</span></div>
+      </div>
+      <p class="tool-desc">All-in-one LinkedIn workspace: ideation + creation + visual formatting + scheduling in one platform.</p>
+      <div class="tool-note">💡 Best for consistent posting. Repurposes blog posts, videos and PDFs into ready posts.</div>
+      <div class="tool-price-row"><span class="price-pill price-paid">$19/mo Pro</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://taplio.com" target="_blank" data-price="paid" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/taplio.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">TP</span></div>
+        <div class="tool-info"><div class="tool-name">Taplio</div><div class="tool-domain">taplio.com</div></div>
+        <div class="tool-badges"><span class="badge badge-paid">💳 Paid</span></div>
+      </div>
+      <p class="tool-desc">LinkedIn-specific AI for writing posts, carousels, and scheduling with built-in analytics and inspiration.</p>
+      <div class="tool-note">💡 Best for heavy personal branding users. Pricier but fully LinkedIn-focused.</div>
+      <div class="tool-price-row"><span class="price-pill price-paid">$39/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ─── PROFILE ─── -->
+<section class="category-block" id="profile" style="--cat-color:#f87171">
+  <div class="cat-header">
+    <span class="cat-number">03</span>
+    <h2 class="cat-title" style="color:#f87171">Profile Pictures</h2>
+    <span class="cat-count">5 tools</span>
+  </div>
+  <p class="cat-desc">AI headshot generators — from free daily credits to enterprise-grade professional packs.</p>
+  <div class="tools-grid">
+
+    <a class="tool-card" href="https://remini.ai" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/remini.ai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">RM</span></div>
+        <div class="tool-info"><div class="tool-name">Remini</div><div class="tool-domain">remini.ai</div></div>
+        <div class="tool-badges"><span class="badge badge-free">🆓 Free Tier</span></div>
+      </div>
+      <p class="tool-desc">Upscales and enhances existing photos to studio quality. Turns casual selfies into professional-looking shots.</p>
+      <div class="tool-note">💡 Best free starting point — enhances real photos rather than generating new ones.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → ~$10/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.createvision.ai" target="_blank" data-price="free" data-badge="best">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/createvision.ai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">CV</span></div>
+        <div class="tool-info"><div class="tool-name">CreateVision AI</div><div class="tool-domain">createvision.ai</div></div>
+        <div class="tool-badges"><span class="badge badge-best">⭐ 4 Free/Day</span><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Studio-quality headshots in 5–10 seconds from a single photo. 4 free daily generations, no watermarks.</p>
+      <div class="tool-note">💡 Best free-tier headshot tool. 4 daily free shots enough for most use cases.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free (4/day) → paid</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.photopacks.ai" target="_blank" data-price="paid" data-badge="best">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/photopacks.ai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">PP</span></div>
+        <div class="tool-info"><div class="tool-name">PhotoPacks.AI</div><div class="tool-domain">photopacks.ai</div></div>
+        <div class="tool-badges"><span class="badge badge-best">⭐ Best Quality</span><span class="badge badge-paid">One-time</span></div>
+      </div>
+      <p class="tool-desc">Studio-quality AI headshots in under an hour. Closest result to a real photoshoot at ~$20 one-time.</p>
+      <div class="tool-note">💡 Best quality-to-price ratio for a full professional headshot pack.</div>
+      <div class="tool-price-row"><span class="price-pill price-paid">~$20 one-time</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.aragon.ai" target="_blank" data-price="paid" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/aragon.ai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">AR</span></div>
+        <div class="tool-info"><div class="tool-name">Aragon AI</div><div class="tool-domain">aragon.ai</div></div>
+        <div class="tool-badges"><span class="badge badge-paid">🏢 Enterprise</span></div>
+      </div>
+      <p class="tool-desc">Enterprise-grade AI headshots with full commercial rights. Used by Fortune 500 teams at scale.</p>
+      <div class="tool-note">💡 Best for delivering headshots to clients or large teams as a packaged service.</div>
+      <div class="tool-price-row"><span class="price-pill price-paid">~$29 one-time</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.heygen.com" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/heygen.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">HG</span></div>
+        <div class="tool-info"><div class="tool-name">HeyGen</div><div class="tool-domain">heygen.com</div></div>
+        <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Creates realistic AI avatar photos and talking videos from a single image. Goes beyond static headshots.</p>
+      <div class="tool-note">💡 Best when you need talking avatar videos in addition to static profile photos.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $29/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ─── WEB ─── -->
+<section class="category-block" id="web" style="--cat-color:#c084fc">
+  <div class="cat-header">
+    <span class="cat-number">04</span>
+    <h2 class="cat-title" style="color:#c084fc">Web Frames & Distribution</h2>
+    <span class="cat-count">6 tools</span>
+  </div>
+  <p class="cat-desc">From design generation to live publication — the full web design-to-deploy pipeline.</p>
+  <div class="tools-grid">
+
+    <a class="tool-card" href="https://www.figma.com" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/figma.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">FG</span></div>
+        <div class="tool-info"><div class="tool-name">Figma Starter</div><div class="tool-domain">figma.com</div></div>
+        <div class="tool-badges"><span class="badge badge-free">🆓 Free</span></div>
+      </div>
+      <p class="tool-desc">Full design tool free for individuals — up to 3 files, prototyping, and basic dev handoff included.</p>
+      <div class="tool-note">💡 Free Starter covers most solo freelance work. Pro at $12/mo for unlimited files.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $12/mo Pro</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.figma.com/make" target="_blank" data-price="included" data-badge="best">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/figma.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">FM</span></div>
+        <div class="tool-info"><div class="tool-name">Figma Make</div><div class="tool-domain">figma.com/make</div></div>
+        <div class="tool-badges"><span class="badge badge-best">⭐ Best Pick</span><span class="badge badge-included">✅ In Plan</span></div>
+      </div>
+      <p class="tool-desc">Generate full interfaces and functional prototypes from natural language — no coding required.</p>
+      <div class="tool-note">💡 Already in your Figma plan. Best starting point for web frame generation.</div>
+      <div class="tool-price-row"><span class="price-pill price-included">Included in Figma</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.figma.com/sites" target="_blank" data-price="paid" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/figma.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">FS</span></div>
+        <div class="tool-info"><div class="tool-name">Figma Sites</div><div class="tool-domain">figma.com/sites</div></div>
+        <div class="tool-badges"><span class="badge badge-paid">💳 Add-on</span></div>
+      </div>
+      <p class="tool-desc">Publish a functional website directly from your prototype with animations, scroll effects, and a built-in CMS.</p>
+      <div class="tool-note">💡 Small add-on cost. Ideal for portfolio sites or client landing pages without a developer.</div>
+      <div class="tool-price-row"><span class="price-pill price-paid">~$40/yr add-on</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.builder.io" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/builder.io" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">BI</span></div>
+        <div class="tool-info"><div class="tool-name">Builder.io</div><div class="tool-domain">builder.io</div></div>
+        <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Converts Figma designs to production-ready code (React / Vue / Tailwind / HTML) with auto-responsiveness.</p>
+      <div class="tool-note">💡 Free plan available. Best for design-to-dev handoff with engineering teams.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $19/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.framer.com" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/framer.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">FR</span></div>
+        <div class="tool-info"><div class="tool-name">Framer</div><div class="tool-domain">framer.com</div></div>
+        <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Design and publish interactive websites with AI-assisted layout and animation — no code needed.</p>
+      <div class="tool-note">💡 Better visual output than Figma Sites. Best for portfolio sites with complex animations.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $15/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.webflow.com" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/webflow.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">WF</span></div>
+        <div class="tool-info"><div class="tool-name">Webflow</div><div class="tool-domain">webflow.com</div></div>
+        <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Professional no-code builder with AI features — preferred by senior designers for complex client websites.</p>
+      <div class="tool-note">💡 Steeper learning curve than Framer but more powerful for complex client websites.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $14/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ─── RESPONSIVE ─── -->
+<section class="category-block" id="responsive" style="--cat-color:#fbbf24">
+  <div class="cat-header">
+    <span class="cat-number">05</span>
+    <h2 class="cat-title" style="color:#fbbf24">Responsive Automation</h2>
+    <span class="cat-count">3 tools</span>
+  </div>
+  <p class="cat-desc">Figma plugins and AI tools that automate breakpoints, resizing, and design-to-code conversion.</p>
+  <div class="tools-grid">
+
+    <a class="tool-card" href="https://www.figma.com/ai" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/figma.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">FA</span></div>
+        <div class="tool-info"><div class="tool-name">Figma AI</div><div class="tool-domain">figma.com/ai</div></div>
+        <div class="tool-badges"><span class="badge badge-free">🆓 Native</span><span class="badge badge-included">✅ Included</span></div>
+      </div>
+      <p class="tool-desc">Built-in AI automates resizing, typography updates, and style application consistently across your whole project.</p>
+      <div class="tool-note">💡 Start here — completely free and covers most basic responsive automation needs.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Included in Figma free</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.builder.io/figma" target="_blank" data-price="free" data-badge="best">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/builder.io" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">BI</span></div>
+        <div class="tool-info"><div class="tool-name">Builder.io Plugin</div><div class="tool-domain">builder.io/figma</div></div>
+        <div class="tool-badges"><span class="badge badge-best">⭐ Best Pick</span><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Figma plugin that auto-adapts designs to screen sizes and maps components directly to existing code components.</p>
+      <div class="tool-note">💡 Must-have if you maintain a design system or component library shared with devs.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $19/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.animaapp.com" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/animaapp.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">AN</span></div>
+        <div class="tool-info"><div class="tool-name">Anima</div><div class="tool-domain">animaapp.com</div></div>
+        <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Converts designs to responsive HTML/CSS/React with full breakpoint control and handoff documentation built in.</p>
+      <div class="tool-note">💡 Free plan: 5 generations/day. Pro at $24/mo for full team use.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free (5/day) → $24/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ─── DIAGRAMS ─── -->
+<section class="category-block" id="diagrams" style="--cat-color:#fb923c">
+  <div class="cat-header">
+    <span class="cat-number">06</span>
+    <h2 class="cat-title" style="color:#fb923c">Diagrams & Charts</h2>
+    <span class="cat-count">5 tools</span>
+  </div>
+  <p class="cat-desc">AI-generated flowcharts, data visualizations, infographics, and collaborative diagrams.</p>
+  <div class="tools-grid">
+
+    <a class="tool-card" href="https://www.figma.com/figjam" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/figma.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">FJ</span></div>
+        <div class="tool-info"><div class="tool-name">FigJam AI</div><div class="tool-domain">figma.com/figjam</div></div>
+        <div class="tool-badges"><span class="badge badge-free">🆓 Free</span><span class="badge badge-included">✅ In Plan</span></div>
+      </div>
+      <p class="tool-desc">Turns complex ideas into diagrams instantly, sorts feedback, and automates tasks — directly inside Figma.</p>
+      <div class="tool-note">💡 Already in your free Figma plan. Best for client workshops and flowcharts.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Included in Figma</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://whimsical.com" target="_blank" data-price="free" data-badge="best">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/whimsical.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">WH</span></div>
+        <div class="tool-info"><div class="tool-name">Whimsical AI</div><div class="tool-domain">whimsical.com</div></div>
+        <div class="tool-badges"><span class="badge badge-best">⭐ Best Pick</span><span class="badge badge-free">Free Forever</span></div>
+      </div>
+      <p class="tool-desc">AI-powered flowcharts, mind maps, and wireframes with a clean minimal interface. Free forever for core features.</p>
+      <div class="tool-note">💡 Best standalone diagram tool. Faster than FigJam for solo async work.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free forever (core)</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://piktochart.com" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/piktochart.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">PK</span></div>
+        <div class="tool-info"><div class="tool-name">Piktochart</div><div class="tool-domain">piktochart.com</div></div>
+        <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Charts, infographics, and visual reports all in one polished platform with AI generation built in.</p>
+      <div class="tool-note">💡 Free plan with watermark. Best when charts need client-presentation level polish.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → ~$29/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.visme.co" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/visme.co" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">VS</span></div>
+        <div class="tool-info"><div class="tool-name">Visme</div><div class="tool-domain">visme.co</div></div>
+        <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Full visual platform — diagrams, charts, presentations and infographics with shared brand template libraries.</p>
+      <div class="tool-note">💡 Best for teams needing a shared brand template library for consistent data visuals.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $29/mo</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+    <a class="tool-card" href="https://www.notion.so" target="_blank" data-price="free" data-badge="alt">
+      <div class="tool-card-top">
+        <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/notion.so" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">NT</span></div>
+        <div class="tool-info"><div class="tool-name">Notion AI Charts</div><div class="tool-domain">notion.so</div></div>
+        <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+      </div>
+      <p class="tool-desc">Native AI chart and table generation inside Notion — no separate tool needed for simple diagrams.</p>
+      <div class="tool-note">💡 Best zero-friction option if you already live in Notion for project management.</div>
+      <div class="tool-price-row"><span class="price-pill price-free">Free → $10/mo Plus</span><span class="visit-arrow">↗</span></div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ─── VIDEO ─── -->
+<section class="category-block" id="video" style="--cat-color:#e879f9">
+  <div class="cat-header">
+    <span class="cat-number">07</span>
+    <h2 class="cat-title" style="color:#e879f9">Video Creation</h2>
+    <span class="cat-count">20 tools</span>
+  </div>
+  <p class="cat-desc">The complete AI video stack — editing, generation, music, SFX, and image creation from scratch.</p>
+
+  <!-- Editing -->
+  <div class="sub-category">
+    <div class="sub-title">✂️ Video Editing & Trimming</div>
+    <div class="tools-grid">
+
+      <a class="tool-card" href="https://www.adobe.com/products/premiere.html" target="_blank" data-price="included" data-badge="best">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/adobe.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">PR</span></div>
+          <div class="tool-info"><div class="tool-name">Adobe Premiere Pro</div><div class="tool-domain">adobe.com</div></div>
+          <div class="tool-badges"><span class="badge badge-best">⭐ Best Pick</span><span class="badge badge-included">✅ In Plan</span></div>
+        </div>
+        <p class="tool-desc">Industry standard with AI Generative Extend, Auto Reframe, scene detection, and 27-language auto-captions.</p>
+        <div class="tool-note">💡 Already in your Adobe plan. Start here for all professional video editing and finishing.</div>
+        <div class="tool-price-row"><span class="price-pill price-included">Included in Adobe</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://www.capcut.com" target="_blank" data-price="free" data-badge="best">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/capcut.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">CC</span></div>
+          <div class="tool-info"><div class="tool-name">CapCut</div><div class="tool-domain">capcut.com</div></div>
+          <div class="tool-badges"><span class="badge badge-best">⭐ Best Free</span><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Best free AI video editor — auto-captions in 20+ languages, background removal, smart reframe for vertical.</p>
+        <div class="tool-note">💡 Free tier rivals paid tools for social content. Fastest for short-form turnaround.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free → $7.99/mo Pro</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://www.blackmagicdesign.com/products/davinciresolve" target="_blank" data-price="free" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/blackmagicdesign.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">DR</span></div>
+          <div class="tool-info"><div class="tool-name">DaVinci Resolve</div><div class="tool-domain">blackmagicdesign.com</div></div>
+          <div class="tool-badges"><span class="badge badge-free">🆓 Pro & Free</span></div>
+        </div>
+        <p class="tool-desc">Professional-grade editor with AI color grading, Magic Mask, and speech-based editing. Free version is full-featured.</p>
+        <div class="tool-note">💡 Absurdly generous free version. Best for cinematic color grading and finishing.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free forever (full)</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://www.descript.com" target="_blank" data-price="free" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/descript.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">DS</span></div>
+          <div class="tool-info"><div class="tool-name">Descript</div><div class="tool-domain">descript.com</div></div>
+          <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Edit video like a text document — delete words from the transcript to cut video. Game-changer for dialogue content.</p>
+        <div class="tool-note">💡 Fastest editor for interview, podcast, and talking-head video. Free plan available.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free → $24/mo Pro</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://www.veed.io" target="_blank" data-price="free" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/veed.io" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">VD</span></div>
+          <div class="tool-info"><div class="tool-name">VEED.io</div><div class="tool-domain">veed.io</div></div>
+          <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Full browser-based video editor with AI subtitles, background removal, and noise cancellation. No install needed.</p>
+        <div class="tool-note">💡 Free plan with watermark. Best for quick edits without installing any software.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free → $18/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Video Generation -->
+  <div class="sub-category">
+    <div class="sub-title">🎥 Original Video Generation</div>
+    <div class="tools-grid">
+
+      <a class="tool-card" href="https://runwayml.com" target="_blank" data-price="free" data-badge="best">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/runwayml.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">RW</span></div>
+          <div class="tool-info"><div class="tool-name">Runway Gen-4.5</div><div class="tool-domain">runwayml.com</div></div>
+          <div class="tool-badges"><span class="badge badge-best">⭐ Best Consistency</span><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Best character consistency across scenes. 5–10 sec clips, up to 4K. Top benchmark score in 2026.</p>
+        <div class="tool-note">💡 Free credits to test. Best for narrative content where the same character appears across shots.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free (125 credits) → $12/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://klingai.com" target="_blank" data-price="free" data-badge="best">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/klingai.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">KL</span></div>
+          <div class="tool-info"><div class="tool-name">Kling 2.6</div><div class="tool-domain">klingai.com</div></div>
+          <div class="tool-badges"><span class="badge badge-best">⭐ Longest Clips</span><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Up to 2–3 min videos with simultaneous audio-visual generation — dialogue, SFX, and ambience in one pass.</p>
+        <div class="tool-note">💡 Best duration-to-price ratio. Free daily credits reset every 24 hours.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free (66/day) → $6.99/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://pika.art" target="_blank" data-price="free" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/pika.art" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">PK</span></div>
+          <div class="tool-info"><div class="tool-name">Pika 2.5</div><div class="tool-domain">pika.art</div></div>
+          <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Fastest generation (under 2 min). Best for viral effects and social content. Unique Pikaffects style library.</p>
+        <div class="tool-note">💡 Lowest paid entry point. Best for fast social media content and quick style tests.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free → $8/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://lumalabs.ai" target="_blank" data-price="free" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/lumalabs.ai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">LM</span></div>
+          <div class="tool-info"><div class="tool-name">Luma Ray3</div><div class="tool-domain">lumalabs.ai</div></div>
+          <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Hi-Fi 4K HDR output with superior physics simulation. Best for product and architectural video.</p>
+        <div class="tool-note">💡 Best visual fidelity at entry price. Strong for product shots and archviz renders.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free → $7.99/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://firefly.adobe.com" target="_blank" data-price="included" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/adobe.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">FV</span></div>
+          <div class="tool-info"><div class="tool-name">Firefly Video</div><div class="tool-domain">firefly.adobe.com</div></div>
+          <div class="tool-badges"><span class="badge badge-included">✅ In Plan</span></div>
+        </div>
+        <p class="tool-desc">IP-safe video generation trained on licensed content only. Camera motion from reference video. No copyright risk.</p>
+        <div class="tool-note">💡 Already in your plan. Only commercially safe AI video model — zero copyright risk.</div>
+        <div class="tool-price-row"><span class="price-pill price-included">Included in Adobe</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://deepmind.google/technologies/veo/" target="_blank" data-price="paid" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/google.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">V3</span></div>
+          <div class="tool-info"><div class="tool-name">Google Veo 3</div><div class="tool-domain">deepmind.google</div></div>
+          <div class="tool-badges"><span class="badge badge-paid">🏆 Cinematic</span></div>
+        </div>
+        <p class="tool-desc">Highest photorealism benchmark. Native synchronized audio — dialogue, SFX, and ambience generated in one pass.</p>
+        <div class="tool-note">💡 Most expensive but best-in-class. Worth it for hero shots in high-budget productions.</div>
+        <div class="tool-price-row"><span class="price-pill price-paid">Premium / ~$250/mo Ultra</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Music -->
+  <div class="sub-category">
+    <div class="sub-title">🎵 Music Generation</div>
+    <div class="tools-grid">
+
+      <a class="tool-card" href="https://suno.com" target="_blank" data-price="free" data-badge="best">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/suno.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">SN</span></div>
+          <div class="tool-info"><div class="tool-name">Suno</div><div class="tool-domain">suno.com</div></div>
+          <div class="tool-badges"><span class="badge badge-best">⭐ Best Overall</span><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Full songs with vocals, lyrics, instruments, and production from a text prompt in under 60 seconds.</p>
+        <div class="tool-note">💡 Free: 10 songs/day (non-commercial). Pro at $10/mo for commercial licensing.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free (10/day) → $10/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://udio.com" target="_blank" data-price="free" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/udio.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">UD</span></div>
+          <div class="tool-info"><div class="tool-name">Udio</div><div class="tool-domain">udio.com</div></div>
+          <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Highest audio fidelity — 48kHz stereo output closest to professional studio quality. Section-level editing.</p>
+        <div class="tool-note">💡 Best pure audio quality. Note: WAV/stem downloads suspended post-UMG licensing deal.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free (~3/day) → $10/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://elevenlabs.io" target="_blank" data-price="free" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/elevenlabs.io" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">EL</span></div>
+          <div class="tool-info"><div class="tool-name">ElevenLabs Music</div><div class="tool-domain">elevenlabs.io</div></div>
+          <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Fully licensed music generation (Merlin + Kobalt) — zero copyright risk for commercial YouTube and brand use.</p>
+        <div class="tool-note">💡 Best for commercial projects. Excels at instrumentals. Weaker on vocals vs Suno/Udio.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free (~20 min) → $5/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://soundraw.io" target="_blank" data-price="paid" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/soundraw.io" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">SW</span></div>
+          <div class="tool-info"><div class="tool-name">Soundraw</div><div class="tool-domain">soundraw.io</div></div>
+          <div class="tool-badges"><span class="badge badge-paid">💳 Paid</span></div>
+        </div>
+        <p class="tool-desc">Select mood, genre, and instruments — adjust audio blocks for precise timing fit to video segments.</p>
+        <div class="tool-note">💡 Best for background music precisely timed to video. More controlled than Suno.</div>
+        <div class="tool-price-row"><span class="price-pill price-paid">$16.99/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- SFX -->
+  <div class="sub-category">
+    <div class="sub-title">🔊 SFX & Audio Enhancement</div>
+    <div class="tools-grid">
+
+      <a class="tool-card" href="https://elevenlabs.io/sound-effects" target="_blank" data-price="free" data-badge="best">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/elevenlabs.io" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">SX</span></div>
+          <div class="tool-info"><div class="tool-name">ElevenLabs SFX</div><div class="tool-domain">elevenlabs.io</div></div>
+          <div class="tool-badges"><span class="badge badge-best">⭐ Best SFX</span><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Generate royalty-free sound effects from text prompts. Covers explosions, ambience, foley, and more.</p>
+        <div class="tool-note">💡 Best AI SFX tool. Free tier is generous. Commercial use cleared on paid plans from $5/mo.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free → $5/mo Starter</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://podcast.adobe.com" target="_blank" data-price="included" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/adobe.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">AP</span></div>
+          <div class="tool-info"><div class="tool-name">Adobe Podcast</div><div class="tool-domain">podcast.adobe.com</div></div>
+          <div class="tool-badges"><span class="badge badge-included">✅ In Plan</span></div>
+        </div>
+        <p class="tool-desc">AI audio cleanup — removes background noise, enhances voice quality, and edits audio by transcript.</p>
+        <div class="tool-note">💡 Already in your Adobe plan. Best for cleaning up voiceovers and dialogue tracks.</div>
+        <div class="tool-price-row"><span class="price-pill price-included">Included in Adobe</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://mubert.com" target="_blank" data-price="free" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/mubert.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">MB</span></div>
+          <div class="tool-info"><div class="tool-name">Mubert</div><div class="tool-domain">mubert.com</div></div>
+          <div class="tool-badges"><span class="badge badge-free">Freemium</span></div>
+        </div>
+        <p class="tool-desc">Generates continuous royalty-free background music loops. Better than Suno for instrumental ambient beds.</p>
+        <div class="tool-note">💡 Best for ambient and background loops. Integrates with video editors via API.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free → $14/mo</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Image Creation -->
+  <div class="sub-category">
+    <div class="sub-title">🖼️ Image Creation from Scratch</div>
+    <div class="tools-grid">
+
+      <a class="tool-card" href="https://firefly.adobe.com" target="_blank" data-price="included" data-badge="best">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/adobe.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">FF</span></div>
+          <div class="tool-info"><div class="tool-name">Adobe Firefly</div><div class="tool-domain">firefly.adobe.com</div></div>
+          <div class="tool-badges"><span class="badge badge-best">⭐ Best Pick</span><span class="badge badge-included">✅ In Plan</span></div>
+        </div>
+        <p class="tool-desc">Multi-model hub (Firefly + FLUX + Gemini + Ideogram). The only IP-safe model for commercial image generation.</p>
+        <div class="tool-note">💡 Already in your plan. Use it as your primary image gen hub — zero copyright risk.</div>
+        <div class="tool-price-row"><span class="price-pill price-included">Included in Adobe</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://www.midjourney.com" target="_blank" data-price="paid" data-badge="best">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/midjourney.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">MJ</span></div>
+          <div class="tool-info"><div class="tool-name">Midjourney</div><div class="tool-domain">midjourney.com</div></div>
+          <div class="tool-badges"><span class="badge badge-best">⭐ Best Aesthetics</span><span class="badge badge-paid">💳 Paid</span></div>
+        </div>
+        <p class="tool-desc">Unmatched artistic style and aesthetic control. Industry standard for concept art and brand visual direction.</p>
+        <div class="tool-note">💡 No free tier. Best for high-quality brand moodboards, concepts, and art direction.</div>
+        <div class="tool-price-row"><span class="price-pill price-paid">$10/mo Basic → $30/mo Pro</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+      <a class="tool-card" href="https://ideogram.ai" target="_blank" data-price="free" data-badge="alt">
+        <div class="tool-card-top">
+          <div class="tool-logo-wrap"><img src="https://logo.clearbit.com/ideogram.ai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""><span class="tool-logo-fallback" style="display:none">ID</span></div>
+          <div class="tool-info"><div class="tool-name">Ideogram</div><div class="tool-domain">ideogram.ai</div></div>
+          <div class="tool-badges"><span class="badge badge-free">🆓 Free Tier</span></div>
+        </div>
+        <p class="tool-desc">Best AI model for accurate text rendering inside images — logos, posters, mockups with legible type.</p>
+        <div class="tool-note">💡 Free tier available. Go-to when you need readable text inside AI-generated images.</div>
+        <div class="tool-price-row"><span class="price-pill price-free">Free → $8/mo Basic</span><span class="visit-arrow">↗</span></div>
+      </a>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- COST SUMMARY -->
+<div class="cost-section">
+  <h2 class="cost-title">Cost <span style="color:#e8ff47">Summary</span></h2>
+  <p class="cost-subtitle">Minimum new spend by category — assuming you already have Adobe Suite.</p>
+
+  <div class="cost-grid">
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">📊 PPT Architecture</span><span class="cost-min">From $8/mo</span></div>
+      <div class="cost-free-label">✅ Gamma free · Google Slides free</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">📱 LinkedIn Posts</span><span class="cost-min">From $15/mo</span></div>
+      <div class="cost-free-label">✅ Canva free · aiCarousels free</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">🧑‍💼 Profile Pictures</span><span class="cost-min">From $10/mo</span></div>
+      <div class="cost-free-label">✅ CreateVision 4/day free</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">🌐 Web Frames</span><span class="cost-min">From $12/mo</span></div>
+      <div class="cost-free-label">✅ Figma free · Builder.io free</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">📐 Responsive Auto.</span><span class="cost-min">From $19/mo</span></div>
+      <div class="cost-free-label">✅ Figma AI free · Anima free tier</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">📈 Diagrams & Charts</span><span class="cost-min">From $29/mo</span></div>
+      <div class="cost-free-label">✅ FigJam free · Whimsical free forever</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">✂️ Video Editing</span><span class="cost-min">From $7.99/mo</span></div>
+      <div class="cost-free-label">✅ CapCut free · DaVinci free forever</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">🎥 Video Generation</span><span class="cost-min">From $6.99/mo</span></div>
+      <div class="cost-free-label">✅ Runway credits · Kling 66/day · Pika free</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">🎵 Music Generation</span><span class="cost-min">From $10/mo</span></div>
+      <div class="cost-free-label">✅ Suno 10 songs/day free</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">🔊 SFX & Audio</span><span class="cost-min">From $5/mo</span></div>
+      <div class="cost-free-label">✅ ElevenLabs SFX free · Adobe Podcast in plan</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-card-header"><span class="cost-cat-name">🖼️ Image Creation</span><span class="cost-min">From $10/mo</span></div>
+      <div class="cost-free-label">✅ Ideogram free · Firefly in Adobe plan</div>
+    </div>
+  </div>
+
+  <div class="zero-spend-banner">
+    <div class="banner-icon">💡</div>
+    <div class="banner-text">
+      <strong>Zero new spend is possible.</strong> CapCut + DaVinci Resolve + Kling free + Suno free + ElevenLabs SFX free + Ideogram free + Canva free + Whimsical free + your existing Adobe plan covers the <strong>entire workflow at $0 in new subscriptions.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend-section">
+  <div class="legend-title">Badge Legend</div>
+  <div class="legend-grid">
+    <span class="badge badge-best">⭐ Best Pick</span>
+    <span class="badge badge-free">🆓 Free / Freemium</span>
+    <span class="badge badge-included">✅ Already in your plan</span>
+    <span class="badge badge-paid">💳 Paid only</span>
+    <span class="badge badge-alt">🔁 Alternative</span>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <span>AI Design Stack — Senior Designer Reference</span>
+  <span>March 2026 · 40+ tools · 7 categories</span>
+</footer>
+
+<script>
+function filterAll(btn) {
+  setActive(btn);
+  document.querySelectorAll('.tool-card').forEach(c => c.style.display = 'flex');
+  document.querySelectorAll('.category-block, .sub-category').forEach(s => s.style.display = '');
+}
+
+function filterPrice(type, btn) {
+  setActive(btn);
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const p = card.dataset.price;
+    const show = type === 'free' ? (p === 'free') : type === 'included' ? (p === 'included') : (p === 'paid');
+    card.style.display = show ? 'flex' : 'none';
+  });
+}
+
+function filterBadge(type, btn) {
+  setActive(btn);
+  document.querySelectorAll('.tool-card').forEach(card => {
+    card.style.display = card.dataset.badge === type ? 'flex' : 'none';
+  });
+}
+
+function setActive(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
